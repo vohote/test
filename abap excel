@@ -1,0 +1,238 @@
+class ZCL_EXCEL_TEST definition
+  public
+  final
+  create public .
+
+public section.
+
+  class-methods EXCEL_TO_ITAB
+    importing
+      !I_FILE type STRING optional
+      !I_SKIP_ROW type I
+      !I_MANDT type ABAP_BOOLEAN
+    exporting
+      !ITAB type TABLE .
+  class-methods TABLE_MOVE_CORRESPONDING
+    importing
+      value(IR_INTAB) type ref to DATA
+      value(IR_OUTTAB) type ref to DATA .
+protected section.
+private section.
+ENDCLASS.
+
+
+
+CLASS ZCL_EXCEL_TEST IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method ZCL_EXCEL_TEST=>EXCEL_TO_ITAB
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] I_FILE                         TYPE        STRING(optional)
+* | [--->] I_SKIP_ROW                     TYPE        I
+* | [--->] I_MANDT                        TYPE        ABAP_BOOLEAN
+* | [<---] ITAB                           TYPE        TABLE
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD EXCEL_TO_ITAB.
+
+    DATA : LV_FILENAME      TYPE STRING,
+           LT_RECORDS       TYPE SOLIX_TAB,
+           LV_HEADERXSTRING TYPE XSTRING,
+           LV_FILELENGTH    TYPE I,
+           LT_FILE_TABLE    TYPE FILETABLE,
+           LS_FILE_TABLE    TYPE FILE_TABLE,
+           LV_RC            TYPE I,
+           LV_INDEX         TYPE I,
+           LV_INDEX2        TYPE I.
+
+
+    FIELD-SYMBOLS:   <DY_TABLE> TYPE STANDARD TABLE,
+           <DY_WA>          TYPE ANY,
+           <LS_TAB>         TYPE ANY,
+           <FIELD>          TYPE ANY,
+           <FIELD2>         TYPE ANY.
+
+    IF ITAB IS NOT SUPPLIED.
+*      MESSAGE 'ERROR' TYPE 'S' DISPLAY LIKE 'E'.
+      EXIT.
+    ENDIF.
+
+    IF I_FILE IS INITIAL.
+      CL_GUI_FRONTEND_SERVICES=>FILE_OPEN_DIALOG(
+        EXPORTING
+*         window_title            = window_title      " Title Of File Open Dialog
+          DEFAULT_EXTENSION       = 'xlsx' " Default Extension
+*         default_filename        = default_filename  " Default File Name
+          FILE_FILTER             = 'excel (*.xlsx)|*.xlsx|'       " File Extension Filter String
+*         with_encoding           = with_encoding     " File Encoding
+*         initial_directory       = initial_directory " Initial Directory
+          MULTISELECTION          = ABAP_FALSE    " Multiple selections poss.
+        CHANGING
+          FILE_TABLE              = LT_FILE_TABLE        " Table Holding Selected Files
+          RC                      = LV_RC                " Return Code, Number of Files or -1 If Error Occurred
+*         user_action             = user_action       " User Action (See Class Constants ACTION_OK, ACTION_CANCEL)
+*         file_encoding           = file_encoding
+        EXCEPTIONS
+          FILE_OPEN_DIALOG_FAILED = 1                 " "Open File" dialog failed
+          CNTL_ERROR              = 2                 " Control error
+          ERROR_NO_GUI            = 3                 " No GUI available
+          NOT_SUPPORTED_BY_GUI    = 4                 " GUI does not support this
+          OTHERS                  = 5
+      ).
+      IF SY-SUBRC NE 0.
+        MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+          WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+      ENDIF.
+
+      READ TABLE LT_FILE_TABLE INTO LS_FILE_TABLE INDEX 1.
+      CHECK: SY-SUBRC EQ 0.
+      LV_FILENAME = LS_FILE_TABLE-FILENAME.
+
+    ELSE.
+      LV_FILENAME = I_FILE.
+    ENDIF.
+
+
+
+    CALL FUNCTION 'GUI_UPLOAD'
+      EXPORTING
+        FILENAME                = LV_FILENAME
+        FILETYPE                = 'BIN'
+      IMPORTING
+        FILELENGTH              = LV_FILELENGTH
+        HEADER                  = LV_HEADERXSTRING
+      TABLES
+        DATA_TAB                = LT_RECORDS
+      EXCEPTIONS
+        FILE_OPEN_ERROR         = 1
+        FILE_READ_ERROR         = 2
+        NO_BATCH                = 3
+        GUI_REFUSE_FILETRANSFER = 4
+        INVALID_TYPE            = 5
+        NO_AUTHORITY            = 6
+        UNKNOWN_ERROR           = 7
+        BAD_DATA_FORMAT         = 8
+        HEADER_NOT_ALLOWED      = 9
+        SEPARATOR_NOT_ALLOWED   = 10
+        HEADER_TOO_LONG         = 11
+        UNKNOWN_DP_ERROR        = 12
+        ACCESS_DENIED           = 13
+        DP_OUT_OF_MEMORY        = 14
+        DISK_FULL               = 15
+        DP_TIMEOUT              = 16
+        OTHERS                  = 17.
+
+    CALL FUNCTION 'SCMS_BINARY_TO_XSTRING'
+      EXPORTING
+        INPUT_LENGTH = LV_FILELENGTH
+      IMPORTING
+        BUFFER       = LV_HEADERXSTRING
+      TABLES
+        BINARY_TAB   = LT_RECORDS
+      EXCEPTIONS
+        FAILED       = 1
+        OTHERS       = 2.
+
+    DATA : LO_EXCEL_REF TYPE REF TO CL_FDT_XL_SPREADSHEET .
+
+    TRY .
+        LO_EXCEL_REF = NEW CL_FDT_XL_SPREADSHEET(
+                                DOCUMENT_NAME = LV_FILENAME
+                                XDOCUMENT     = LV_HEADERXSTRING ) .
+      CATCH CX_FDT_EXCEL_CORE.
+        "Implement suitable error handling here
+    ENDTRY .
+
+    "Get List of Worksheets
+    LO_EXCEL_REF->IF_FDT_DOC_SPREADSHEET~GET_WORKSHEET_NAMES(
+      IMPORTING
+        WORKSHEET_NAMES = DATA(LT_WORKSHEETS) ).
+
+    IF NOT LT_WORKSHEETS IS INITIAL.
+      READ TABLE LT_WORKSHEETS INTO DATA(LV_WOKSHEETNAME) INDEX 1.
+
+      DATA(LO_DATA_REF) = LO_EXCEL_REF->IF_FDT_DOC_SPREADSHEET~GET_ITAB_FROM_WORKSHEET(
+                                               LV_WOKSHEETNAME ).
+      "now you have excel work sheet data in dyanmic internal table
+      ASSIGN LO_DATA_REF->* TO <DY_TABLE>.
+    ENDIF.
+
+    DATA(LO_TABLE) = CAST CL_ABAP_TABLEDESCR( CL_ABAP_TYPEDESCR=>DESCRIBE_BY_DATA( <DY_TABLE> ) ).
+    DATA(LO_STRUC) = CAST CL_ABAP_STRUCTDESCR( LO_TABLE->GET_TABLE_LINE_TYPE( ) ).
+    DATA(INDEX) = LINES( LO_STRUC->COMPONENTS ).
+
+    LOOP AT <DY_TABLE> ASSIGNING <DY_WA>.
+      IF SY-TABIX <= I_SKIP_ROW.
+        CONTINUE.
+      ELSEIF <DY_WA> IS INITIAL.
+        CONTINUE.
+      ENDIF.
+
+      APPEND INITIAL LINE TO ITAB ASSIGNING <LS_TAB>.
+      DO INDEX TIMES.
+        IF I_MANDT IS NOT INITIAL. "Mandt 고려
+          LV_INDEX  = SY-INDEX.
+          LV_INDEX2 = SY-INDEX + 1.
+        ELSE. "Mandt 비고려
+          LV_INDEX  = SY-INDEX.
+          LV_INDEX2 = SY-INDEX.
+        ENDIF.
+
+        ASSIGN COMPONENT LV_INDEX OF STRUCTURE <DY_WA> TO <FIELD>.
+        ASSIGN COMPONENT LV_INDEX2 OF STRUCTURE <LS_TAB> TO <FIELD2>.
+        TRY.
+          <FIELD2> = <FIELD>.
+          CATCH CX_ROOT INTO DATA(LX_ROOT).
+        ENDTRY.
+        UNASSIGN: <FIELD>, <FIELD2>.
+      ENDDO.
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method ZCL_EXCEL_TEST=>TABLE_MOVE_CORRESPONDING
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] IR_INTAB                       TYPE REF TO DATA
+* | [--->] IR_OUTTAB                      TYPE REF TO DATA
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD TABLE_MOVE_CORRESPONDING.
+* Table move corresponsing from ir_intab to ir_outtab.
+* (See also: CL_TAAN_RESULT_READER)
+    DATA: l_outlineref TYPE REF TO data,
+          l_tabtype TYPE REF TO cl_abap_tabledescr,
+          l_linetype TYPE REF TO cl_abap_datadescr.
+
+    FIELD-SYMBOLS: <lt_intab> TYPE ANY TABLE,
+                   <lt_out_index> TYPE INDEX TABLE,
+                   <lt_out_std> TYPE STANDARD TABLE,
+                   <l_inline> TYPE data,
+                   <l_outline> TYPE data.
+
+
+    ASSIGN ir_intab->* TO <lt_intab>.
+    l_tabtype ?= cl_abap_typedescr=>describe_by_data_ref( ir_outtab ).
+    IF l_tabtype->table_kind = cl_abap_tabledescr=>tablekind_std.
+*     Standard table: keep sort order
+      ASSIGN ir_outtab->* TO <lt_out_std>.
+      LOOP AT <lt_intab> ASSIGNING <l_inline>.
+        APPEND INITIAL LINE TO <lt_out_std> ASSIGNING <l_outline>.
+        MOVE-CORRESPONDING <l_inline> TO <l_outline>.
+      ENDLOOP.
+    ELSE.
+*     Index tables have their own sort order (TODO: check, if we need this)
+      ASSIGN ir_outtab->* TO <lt_out_index>.
+      l_tabtype ?= cl_abap_typedescr=>describe_by_data( <lt_out_index> ).
+      l_linetype = l_tabtype->get_table_line_type( ).
+      CREATE DATA l_outlineref TYPE HANDLE l_linetype.
+
+      ASSIGN l_outlineref->* TO <l_outline>.
+      LOOP AT <lt_intab> ASSIGNING <l_inline>.
+        MOVE-CORRESPONDING <l_inline> TO <l_outline>.
+        INSERT <l_outline> INTO TABLE <lt_out_index>.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.                    "table_move_corresponding
+ENDCLASS.
