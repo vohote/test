@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_EXCEL_WORKSHEET_ROWDIMENSI</CLSNAME>
+    <LANGU>3</LANGU>
+    <DESCRIPT>Worksheet RowDimension</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>COLLAPSED</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_COLLAPSED</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>new - please pass worksheet to make use of new outline info</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_OUTLINE_LEVEL</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>new - please pass worksheet to make use of new outline info</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>GET_VISIBLE</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>new - please pass worksheet to make use of new outline info</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>OUTLINE_LEVEL</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>ROW_HEIGHT</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Field of type FLTP</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>ROW_INDEX</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>SET_COLLAPSED</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>obsolete - please use worksheet-&gt;set_outline instead</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>SET_OUTLINE_LEVEL</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>obsolete - please use worksheet-&gt;set_outline instead</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VISIBLE</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>XF_INDEX</CMPNAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CONSTRUCTOR</CMPNAME>
+     <SCONAME>IP_INDEX</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_COLLAPSED</CMPNAME>
+     <SCONAME>IO_WORKSHEET</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>If row outlines are handled the new way</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_COLLAPSED</CMPNAME>
+     <SCONAME>R_COLLAPSED</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_OUTLINE_LEVEL</CMPNAME>
+     <SCONAME>IO_WORKSHEET</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>If row outlines are handled the new way</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_OUTLINE_LEVEL</CMPNAME>
+     <SCONAME>R_OUTLINE_LEVEL</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_ROW_HEIGHT</CMPNAME>
+     <SCONAME>R_ROW_HEIGHT</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Field of type FLTP</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_ROW_INDEX</CMPNAME>
+     <SCONAME>R_ROW_INDEX</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_VISIBLE</CMPNAME>
+     <SCONAME>IO_WORKSHEET</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>If row outlines are handled the new way</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_VISIBLE</CMPNAME>
+     <SCONAME>R_VISIBLE</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>GET_XF_INDEX</CMPNAME>
+     <SCONAME>R_XF_INDEX</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_COLLAPSED</CMPNAME>
+     <SCONAME>IP_COLLAPSED</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_OUTLINE_LEVEL</CMPNAME>
+     <SCONAME>IP_OUTLINE_LEVEL</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_OUTLINE_LEVEL</CMPNAME>
+     <SCONAME>ZCX_EXCEL</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Exceptions for ABAP2XLSX</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_ROW_HEIGHT</CMPNAME>
+     <SCONAME>IP_ROW_HEIGHT</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Accept nearly everything</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_ROW_HEIGHT</CMPNAME>
+     <SCONAME>ZCX_EXCEL</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Exceptions for ABAP2XLSX</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_ROW_INDEX</CMPNAME>
+     <SCONAME>IP_INDEX</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_VISIBLE</CMPNAME>
+     <SCONAME>IP_VISIBLE</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Boolean Variable (X=True, -=False, Space=Unknown)</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SET_XF_INDEX</CMPNAME>
+     <SCONAME>IP_XF_INDEX</SCONAME>
+     <LANGU>3</LANGU>
+     <DESCRIPT>Natural number</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>
